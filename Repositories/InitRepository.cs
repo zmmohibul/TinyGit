@@ -1,22 +1,28 @@
+using MiniatureGit.Core;
 using MiniatureGit.Utils;
 
 namespace MiniatureGit.Repositories
 {
     public class InitRepository
     {
-        public static readonly DirectoryInfo PWD = new DirectoryInfo(".");
-        public static readonly DirectoryInfo MiniatureGit = new DirectoryInfo(Path.Join(PWD.FullName, ".minigit"));
-        public static readonly DirectoryInfo Files = new DirectoryInfo(Path.Join(MiniatureGit.FullName, "files"));
-        public static readonly DirectoryInfo Commits = new DirectoryInfo(Path.Join(MiniatureGit.FullName, "commits"));
-        public static readonly DirectoryInfo Branches = new DirectoryInfo(Path.Join(MiniatureGit.FullName, "branches"));
-        
-        public static readonly string Head = Path.Join(MiniatureGit.FullName, "HEAD");
-        public static readonly string CurrentBranch = Path.Join(MiniatureGit.FullName, "CurrentBranch");
-        public static readonly string Master = Path.Join(Branches.FullName, "master");
+        public static string MiniatureGitDirName { get; } = ".minigit";
+        private static readonly DirectoryInfo MiniatureGit = new DirectoryInfo(MiniatureGitDirName);
 
-        public static void Init()
+
+        private static readonly DirectoryInfo Files = new DirectoryInfo(Path.Join(MiniatureGit.FullName, "files"));
+        
+        public static string CommitsDirectoryPath { get; } = $"{MiniatureGitDirName}/commits";
+        private static readonly DirectoryInfo Commits = new DirectoryInfo(Path.Join(MiniatureGit.FullName, "commits"));
+
+        private static readonly DirectoryInfo Branches = new DirectoryInfo(Path.Join(MiniatureGit.FullName, "branches"));
+        
+        private static readonly string Head = Path.Join(MiniatureGit.FullName, "HEAD");
+        private static readonly string CurrentBranch = Path.Join(MiniatureGit.FullName, "CurrentBranch");
+        private static readonly string Master = Path.Join(Branches.FullName, "master");
+
+        public static async void Init()
         {
-            if (Directory.Exists(MiniatureGit.FullName))
+            if (IsGitRepo())
             {
                 LogError.Log("This is an already initialized Git repository...");
             }
@@ -25,11 +31,16 @@ namespace MiniatureGit.Repositories
             Files.Create();
             Commits.Create();
             Branches.Create();
+
+            var initialCommit = new Commit();
+
+            var initialCommitSha = FileSytemUtils.GetSha1FromObject<Commit>(initialCommit);
+            await FileSytemUtils.WriteObjectAsync<Commit>(initialCommit, initialCommitSha, CommitsDirectoryPath);
         }
 
         public static bool IsGitRepo()
         {
-            return Directory.Exists(MiniatureGit.FullName);
+            return Directory.Exists($"./{MiniatureGitDirName}");
         }
     }
 }

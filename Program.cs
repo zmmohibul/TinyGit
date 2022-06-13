@@ -14,12 +14,6 @@ namespace MiniatureGit
 
             var firstArguemnt = args[0].ToLower();
             
-
-            if (!firstArguemnt.Equals("init") & !InitRepository.IsGitRepo())
-            {
-                LogError.Log("This not an initialized git repository...");
-            }
-
             if (firstArguemnt.Equals("init"))
             {
                 InitRepository.Init();
