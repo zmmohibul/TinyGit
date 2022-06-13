@@ -7,7 +7,7 @@ namespace MiniatureGit
     {
         public static void Main(string[] args)
         {
-            if (args.Length <= 0)
+            if (args.Length < 1)
             {
                 LogError.Log("Please enter an argument...");
             }
@@ -17,6 +17,21 @@ namespace MiniatureGit
             if (firstArguemnt.Equals("init"))
             {
                 InitRepository.Init();
+            }
+            else if (!InitRepository.IsGitRepo())
+            {
+                LogError.Log("This is not an initialized git repository");
+
+            }
+            else if (firstArguemnt.Equals("add"))
+            {
+                if (args.Length < 2)
+                {
+                    LogError.Log("Please enter file path to stage file");
+                }
+                
+                var fileToStage = args[1];
+                StagingRepository.StageFile(fileToStage);
             }
             else
             {

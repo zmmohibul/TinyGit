@@ -8,11 +8,11 @@ namespace MiniatureGit.Repositories
         public static string MiniatureGitDirName { get; } = ".minigit";
         private static readonly DirectoryInfo MiniatureGit = new DirectoryInfo(MiniatureGitDirName);
 
-
+        public static string FilesDirectoryPath { get; } = $"./{MiniatureGitDirName}/files";
         private static readonly DirectoryInfo Files = new DirectoryInfo(Path.Join(MiniatureGit.FullName, "files"));
         
-        public static string CommitsDirectoryPath { get; } = $"{MiniatureGitDirName}/commits";
-        private static readonly DirectoryInfo Commits = new DirectoryInfo(Path.Join(MiniatureGit.FullName, "commits"));
+        public static string CommitsDirectoryPath { get; } = $"./{MiniatureGitDirName}/commits";
+        private static readonly DirectoryInfo Commits = new DirectoryInfo(CommitsDirectoryPath);
 
         private static readonly DirectoryInfo Branches = new DirectoryInfo(Path.Join(MiniatureGit.FullName, "branches"));
         
@@ -34,8 +34,8 @@ namespace MiniatureGit.Repositories
 
             var initialCommit = new Commit();
 
-            var initialCommitSha = FileSytemUtils.GetSha1FromObject<Commit>(initialCommit);
-            await FileSytemUtils.WriteObjectAsync<Commit>(initialCommit, initialCommitSha, CommitsDirectoryPath);
+            var initialCommitSha = FileSystemUtils.GetSha1FromObject<Commit>(initialCommit);
+            await FileSystemUtils.WriteObjectAsync<Commit>(initialCommit, initialCommitSha, CommitsDirectoryPath);
         }
 
         public static bool IsGitRepo()
