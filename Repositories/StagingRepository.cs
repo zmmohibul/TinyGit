@@ -14,11 +14,26 @@ namespace MiniatureGit.Repositories
                 LogError.Log($"Could not find '{filePath}' in project directory...");
             }
 
-            await InitRepository.AddFileToStagingArea(filePath);
+            if (filePath.StartsWith("./"))
+            {
+                await InitRepository.AddFileToStagingArea(filePath);
+            }
+            else
+            {
+                await InitRepository.AddFileToStagingArea($"./{filePath}");
+            }
+        }
 
-            // StagingArea.FilesStagedForAddition[filePath] = fileContentSha;
+        public static async Task StageAllFiles()
+        {
+            var files = Directory.GetFiles(".", "*.*", SearchOption.AllDirectories)
+                .Where(d => !d.StartsWith("./."))
+                .Where(d => !d.StartsWith("./MiniatureGit"));
 
-            // await FileSystemUtils.WriteObjectAsync<StagingArea>(StagingArea, "StagingArea", )
+            foreach (var file in files)
+            {
+                await InitRepository.AddFileToStagingArea(file);
+            }
         }
     }
 }

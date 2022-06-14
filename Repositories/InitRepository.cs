@@ -58,13 +58,8 @@ namespace MiniatureGit.Repositories
                 throw new FileNotFoundException();
             }
 
-            var c = await File.ReadAllTextAsync(filePath);
-            using var sha1 = SHA1.Create();
-            var fileContentSha = Convert.ToHexString(sha1.ComputeHash(UnicodeEncoding.UTF8.GetBytes(c)));
+            var fileContentSha = await FileSystemUtils.GetShaOfFileContent(filePath);
 
-            System.Console.WriteLine(filePath);
-            System.Console.WriteLine(fileContentSha);
-            
             SA = await FileSystemUtils.ReadObjectAsync<StagingArea>(StagingAreaPath);
             SA.FilesStagedForAddition[filePath] = fileContentSha;
 

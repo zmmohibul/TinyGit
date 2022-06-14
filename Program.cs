@@ -30,7 +30,16 @@ namespace MiniatureGit
                 }
                 
                 var fileToStage = args[1];
-                await StagingRepository.StageFile(fileToStage);
+                
+                if (fileToStage.Equals("."))
+                {
+                    await StagingRepository.StageAllFiles();
+                }
+                else
+                {
+                    await StagingRepository.StageFile(fileToStage);
+                }
+
             }
             else
             {

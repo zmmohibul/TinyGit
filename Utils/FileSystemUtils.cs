@@ -84,6 +84,17 @@ namespace MiniatureGit.Utils
             return contentSha;
         }
 
+        public static async Task<string> GetShaOfFileContent(string filePath)
+        {
+            var c = await File.ReadAllTextAsync(filePath);
+            
+            using var sha1 = SHA1.Create();
+            var fileContentSha = Convert.ToHexString(sha1.ComputeHash(UnicodeEncoding.UTF8.GetBytes(c)));
+            sha1.Dispose();
+
+            return fileContentSha;
+        }   
+
 
         public static bool FileExists(string filePath)
         {
