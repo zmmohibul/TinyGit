@@ -42,6 +42,11 @@ namespace MiniatureGit.Repositories
             var initialCommitSha = FileSystemUtils.GetSha1FromObject<Commit>(initialCommit);
             await FileSystemUtils.WriteObjectAsync<Commit>(initialCommit, initialCommitSha, CommitsDirectoryPath);
 
+            await File.WriteAllTextAsync(Master, initialCommitSha);
+            await File.WriteAllTextAsync(Head, initialCommitSha);
+            await File.WriteAllTextAsync(CurrentBranch, "master");
+
+
             SA = new StagingArea();
             await FileSystemUtils.WriteObjectAsync<StagingArea>(SA, "StagingArea", $"./{MiniatureGitDirName}");
         }
@@ -64,6 +69,13 @@ namespace MiniatureGit.Repositories
             SA.FilesStagedForAddition[filePath] = fileContentSha;
 
             await FileSystemUtils.WriteObjectAsync<StagingArea>(SA, "StagingArea", $"./{MiniatureGitDirName}");
+        }
+
+        public static async Task<Commit> GetHeadCommit()
+        {
+            var headCommitSha = await File.ReadAllTextAsync(Head);
+            var headCommit = await FileSystemUtils.ReadObjectAsync<Commit>($"{CommitsDirectoryPath}/{headCommitSha}");
+            return headCommit;
         }
 
         public static bool IsGitRepo()

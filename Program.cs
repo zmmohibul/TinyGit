@@ -30,7 +30,7 @@ namespace MiniatureGit
                 }
                 
                 var fileToStage = args[1];
-                
+
                 if (fileToStage.Equals("."))
                 {
                     await StagingRepository.StageAllFiles();
@@ -40,6 +40,15 @@ namespace MiniatureGit
                     await StagingRepository.StageFile(fileToStage);
                 }
 
+            }
+            else if (firstArguemnt.Equals("commit"))
+            {
+                if (args.Length < 2)
+                {
+                    LogError.Log("Please enter a commit message");
+                }
+
+                await CommitRepository.MakeCommit("hello");
             }
             else
             {
