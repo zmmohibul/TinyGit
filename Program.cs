@@ -48,7 +48,7 @@ namespace MiniatureGit
                     LogError.Log("Please enter a commit message");
                 }
 
-                await CommitRepository.MakeCommit("hello");
+                await CommitRepository.MakeCommit(args[1]);
             }
             else
             {
