@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using MiniatureGit.Core;
 using MiniatureGit.Utils;
 
@@ -20,7 +22,10 @@ namespace MiniatureGit.Repositories
         private static readonly string CurrentBranch = Path.Join(MiniatureGit.FullName, "CurrentBranch");
         private static readonly string Master = Path.Join(Branches.FullName, "master");
 
-        public static async void Init()
+        public static string StagingAreaPath { get; } = $"./{MiniatureGitDirName}/StagingArea";
+        private static StagingArea SA;
+
+        public static async Task Init()
         {
             if (IsGitRepo())
             {
@@ -36,6 +41,34 @@ namespace MiniatureGit.Repositories
 
             var initialCommitSha = FileSystemUtils.GetSha1FromObject<Commit>(initialCommit);
             await FileSystemUtils.WriteObjectAsync<Commit>(initialCommit, initialCommitSha, CommitsDirectoryPath);
+
+            SA = new StagingArea();
+            await FileSystemUtils.WriteObjectAsync<StagingArea>(SA, "StagingArea", $"./{MiniatureGitDirName}");
+        }
+
+        public static async Task Setup()
+        {
+            SA = await FileSystemUtils.ReadObjectAsync<StagingArea>(StagingAreaPath);
+        }
+
+        public static async Task AddFileToStagingArea(string filePath)
+        {
+            if (!File.Exists(filePath))
+            {
+                throw new FileNotFoundException();
+            }
+
+            var c = await File.ReadAllTextAsync(filePath);
+            using var sha1 = SHA1.Create();
+            var fileContentSha = Convert.ToHexString(sha1.ComputeHash(UnicodeEncoding.UTF8.GetBytes(c)));
+
+            System.Console.WriteLine(filePath);
+            System.Console.WriteLine(fileContentSha);
+            
+            SA = await FileSystemUtils.ReadObjectAsync<StagingArea>(StagingAreaPath);
+            SA.FilesStagedForAddition[filePath] = fileContentSha;
+
+            await FileSystemUtils.WriteObjectAsync<StagingArea>(SA, "StagingArea", $"./{MiniatureGitDirName}");
         }
 
         public static bool IsGitRepo()

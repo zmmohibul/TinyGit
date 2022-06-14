@@ -41,6 +41,20 @@ namespace MiniatureGit.Utils
             await createStream.DisposeAsync();
         }
 
+        public static async Task<T> ReadObjectAsync<T>(string path)
+        {
+            if (!File.Exists(path))
+            {
+                throw new FileNotFoundException();
+            }
+
+            using FileStream openStream = File.OpenRead(path);
+            T objectToReturn = await JsonSerializer.DeserializeAsync<T>(openStream);
+            await openStream.DisposeAsync();
+
+            return objectToReturn;
+        }
+
         public static string GetSha1FromObject<T>(T obj)
         {
             var serializedObj = JsonSerializer.Serialize<T>(obj);
@@ -56,15 +70,17 @@ namespace MiniatureGit.Utils
         {
             using var sha1 = SHA1.Create();
             var contentSha = Convert.ToHexString(sha1.ComputeHash(input));
+            sha1.Dispose();
+
             return contentSha;
         }
 
         public static string GetSha1FromString(string input)
         {
-            System.Console.WriteLine("Inside GetSha1FromString");
             using var sha1 = SHA1.Create();
-            System.Console.WriteLine(input);
             var contentSha = Convert.ToHexString(sha1.ComputeHash(UnicodeEncoding.UTF8.GetBytes(input)));
+            sha1.Dispose();
+
             return contentSha;
         }
 

@@ -5,7 +5,7 @@ namespace MiniatureGit
 {
     public class Program 
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             if (args.Length < 1)
             {
@@ -16,12 +16,11 @@ namespace MiniatureGit
             
             if (firstArguemnt.Equals("init"))
             {
-                InitRepository.Init();
+                await InitRepository.Init();
             }
             else if (!InitRepository.IsGitRepo())
             {
                 LogError.Log("This is not an initialized git repository");
-
             }
             else if (firstArguemnt.Equals("add"))
             {
@@ -31,7 +30,7 @@ namespace MiniatureGit
                 }
                 
                 var fileToStage = args[1];
-                StagingRepository.StageFile(fileToStage);
+                await StagingRepository.StageFile(fileToStage);
             }
             else
             {

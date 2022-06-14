@@ -1,23 +1,24 @@
+using System.Security.Cryptography;
+using System.Text;
+using MiniatureGit.Core;
 using MiniatureGit.Utils;
 
 namespace MiniatureGit.Repositories
 {
     public class StagingRepository
     {
-        public static async void StageFile(string filePath)
+        public static async Task StageFile(string filePath)
         {
             if (!FileSystemUtils.FileExists(filePath))
             {
                 LogError.Log($"Could not find '{filePath}' in project directory...");
             }
-            System.Console.WriteLine(filePath);
-            var c = await File.ReadAllTextAsync(filePath);
-            // System.Console.WriteLine(c);
-            // System.Console.WriteLine(FileSystemUtils.GetSha1FromByteArray(await File.ReadAllBytesAsync(filePath)));
-            System.Console.WriteLine(FileSystemUtils.GetSha1FromString(c));
 
+            await InitRepository.AddFileToStagingArea(filePath);
 
-            // await FileSystemUtils.CloneFileFromPath(filePath, InitRepository.FilesDirectoryPath);
+            // StagingArea.FilesStagedForAddition[filePath] = fileContentSha;
+
+            // await FileSystemUtils.WriteObjectAsync<StagingArea>(StagingArea, "StagingArea", )
         }
     }
 }
