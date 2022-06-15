@@ -41,6 +41,16 @@ namespace MiniatureGit.Repositories
             await InitRepository.ChangeHeadAndCurrentBranch(newCommitSha);
         }
 
+        public static async Task Checkout(string commitId)
+        {
+            if (!File.Exists(Path.Join(InitRepository.CommitsDirectoryPath, commitId)))
+            {
+                LogError.Log("Invalid Commit Id...");
+            }
+
+            
+        }
+
         public static async Task LogCommits()
         {
             var commitsSha = Directory.GetFiles(InitRepository.CommitsDirectoryPath);

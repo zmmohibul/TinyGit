@@ -54,6 +54,15 @@ namespace MiniatureGit
             {
                 await CommitRepository.LogCommits();
             }
+            else if (firstArguemnt.Equals("checkout"))
+            {
+                if (args.Length < 2)
+                {
+                    LogError.Log("Please enter a commit id");
+                }
+
+                await CommitRepository.Checkout(args[1]);
+            }
             else
             {
                 LogError.Log("Invalid command argument...");
