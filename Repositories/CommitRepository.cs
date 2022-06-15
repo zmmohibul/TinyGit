@@ -43,13 +43,45 @@ namespace MiniatureGit.Repositories
 
         public static async Task Checkout(string commitId)
         {
-            if (!File.Exists(Path.Join(InitRepository.CommitsDirectoryPath, commitId)))
+            var commitIdExist = File.Exists(Path.Join(InitRepository.CommitsDirectoryPath, commitId));
+            if (!commitIdExist)
             {
                 LogError.Log("Invalid Commit Id...");
             }
 
+            await CheckoutCommit(commitId);
+        }
+
+        public static async Task CheckoutBranch(string branchName)
+        {
+            var branchExists = File.Exists(Path.Join(InitRepository.BranchesDirectoryPath, branchName));
+            if (!branchExists)
+            {
+                LogError.Log("Invalid branch name...");
+            }
+
+            var commitId = await File.ReadAllTextAsync(Path.Join(InitRepository.BranchesDirectoryPath, branchName));
+
+            await CheckoutCommit(commitId);
+        }
+
+        public static async Task LogCommits()
+        {
+            var commitsSha = Directory.GetFiles(InitRepository.CommitsDirectoryPath);
+            System.Console.WriteLine();
+            foreach (var sha in commitsSha)
+            {
+                var commit = await FileSystemUtils.ReadObjectAsync<Commit>(sha);
+                System.Console.WriteLine($"Commit Message: {commit.CommitMessage}");
+                System.Console.WriteLine($"Commited At: {commit.CreatedAt}");
+                System.Console.WriteLine($"Commit Id: {Path.GetRelativePath(InitRepository.CommitsDirectoryPath, sha)}");
+                System.Console.WriteLine("=============================================================================\n");
+            }
+        }
+
+        private static async Task CheckoutCommit(string commitId)
+        {
             var commitToCheckout = await FileSystemUtils.ReadObjectAsync<Commit>(Path.Join(InitRepository.CommitsDirectoryPath, commitId));
-            System.Console.WriteLine(commitToCheckout.CommitMessage);
 
             var files = Directory.GetFiles(".", "*.*", SearchOption.AllDirectories)
                 .Where(d => !d.StartsWith("./."))
@@ -65,20 +97,6 @@ namespace MiniatureGit.Repositories
                 Directory.CreateDirectory(Path.GetDirectoryName(file));
                 var fileContent = await File.ReadAllBytesAsync(Path.Join(InitRepository.FilesDirectoryPath, fileSha));
                 await File.WriteAllBytesAsync(file, fileContent);
-            }
-        }
-
-        public static async Task LogCommits()
-        {
-            var commitsSha = Directory.GetFiles(InitRepository.CommitsDirectoryPath);
-            System.Console.WriteLine();
-            foreach (var sha in commitsSha)
-            {
-                var commit = await FileSystemUtils.ReadObjectAsync<Commit>(sha);
-                System.Console.WriteLine($"Commit Message: {commit.CommitMessage}");
-                System.Console.WriteLine($"Commited At: {commit.CreatedAt}");
-                System.Console.WriteLine($"Commit Id: {Path.GetRelativePath(InitRepository.CommitsDirectoryPath, sha)}");
-                System.Console.WriteLine("=============================================================================\n");
             }
         }
 

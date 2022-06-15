@@ -61,6 +61,17 @@ namespace MiniatureGit
                     LogError.Log("Please enter a commit id");
                 }
 
+                if (args.Length > 2)
+                {
+                    if (!args[1].Equals("branch"))
+                    {
+                        LogError.Log("Invalid Command", "You can checkout a commit id or branch name");
+                    }
+
+                    await CommitRepository.CheckoutBranch(args[2]);
+                    return;
+                }
+
                 await CommitRepository.Checkout(args[1]);
             }
             else
