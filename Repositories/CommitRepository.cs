@@ -50,6 +50,22 @@ namespace MiniatureGit.Repositories
 
             var commitToCheckout = await FileSystemUtils.ReadObjectAsync<Commit>(Path.Join(InitRepository.CommitsDirectoryPath, commitId));
             System.Console.WriteLine(commitToCheckout.CommitMessage);
+
+            var files = Directory.GetFiles(".", "*.*", SearchOption.AllDirectories)
+                .Where(d => !d.StartsWith("./."))
+                .Where(d => !d.StartsWith("./MiniatureGit"));
+            
+            foreach (var file in files)
+            {
+                File.Delete(file);
+            }
+
+            foreach (var (file, fileSha) in commitToCheckout.Files)
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(file));
+                var fileContent = await File.ReadAllBytesAsync(Path.Join(InitRepository.FilesDirectoryPath, fileSha));
+                await File.WriteAllBytesAsync(file, fileContent);
+            }
         }
 
         public static async Task LogCommits()
