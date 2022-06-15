@@ -48,7 +48,8 @@ namespace MiniatureGit.Repositories
                 LogError.Log("Invalid Commit Id...");
             }
 
-            
+            var commitToCheckout = await FileSystemUtils.ReadObjectAsync<Commit>(Path.Join(InitRepository.CommitsDirectoryPath, commitId));
+            System.Console.WriteLine(commitToCheckout.CommitMessage);
         }
 
         public static async Task LogCommits()
