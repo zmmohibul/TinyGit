@@ -37,6 +37,8 @@ namespace MiniatureGit.Repositories
 
             var newCommitSha = FileSystemUtils.GetSha1FromObject<Commit>(newCommit);
             await FileSystemUtils.WriteObjectAsync<Commit>(newCommit, newCommitSha, InitRepository.CommitsDirectoryPath);
+
+            await InitRepository.ChangeHeadAndCurrentBranch(newCommitSha);
         }
 
         public static async Task LogCommits()
