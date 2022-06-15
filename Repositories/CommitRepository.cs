@@ -8,13 +8,31 @@ namespace MiniatureGit.Repositories
         public static async Task MakeCommit(string commitMessage)
         {
             var headCommit = await InitRepository.GetHeadCommit();
-            System.Console.WriteLine(headCommit.CommitMessage);
-            System.Console.WriteLine(headCommit.CreatedAt);
 
             var newCommit = CloneCommit(headCommit, commitMessage);
 
-            System.Console.WriteLine(newCommit.CommitMessage);
-            System.Console.WriteLine(newCommit.CreatedAt);
+            var filesStagedForAddition = await InitRepository.GetFilesStagedForAddition();
+            foreach (var (file, fileSha) in filesStagedForAddition)
+            {
+                if (File.Exists(file))
+                {
+                    var fileInDirSha = await FileSystemUtils.GetShaOfFileContent(file);
+                    if (!fileSha.Equals(fileInDirSha))
+                    {
+                        LogError.Log($"The file {file.Remove(0, 2)} has been modified since last staging.");
+                    }
+                    newCommit.Files[file] = fileSha;
+                }
+            }
+
+            foreach (var (file, flieSha) in newCommit.Files)
+            {
+                var fileContent = await File.ReadAllBytesAsync(file);
+                await File.WriteAllBytesAsync(Path.Join(InitRepository.FilesDirectoryPath, flieSha), fileContent);
+            }
+
+            var newCommitSha = FileSystemUtils.GetSha1FromObject<Commit>(newCommit);
+            await FileSystemUtils.WriteObjectAsync<Commit>(newCommit, newCommitSha, InitRepository.CommitsDirectoryPath);
         }
 
         private static Commit CloneCommit(Commit commitToClone, string newCommitMessage)

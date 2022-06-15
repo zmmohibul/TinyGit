@@ -78,6 +78,12 @@ namespace MiniatureGit.Repositories
             return headCommit;
         }
 
+        public static async Task<Dictionary<string, string>> GetFilesStagedForAddition()
+        {
+            SA = await FileSystemUtils.ReadObjectAsync<StagingArea>(StagingAreaPath);
+            return SA.FilesStagedForAddition;
+        }
+
         public static bool IsGitRepo()
         {
             return Directory.Exists($"./{MiniatureGitDirName}");
