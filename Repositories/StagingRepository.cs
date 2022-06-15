@@ -30,9 +30,18 @@ namespace MiniatureGit.Repositories
                 .Where(d => !d.StartsWith("./."))
                 .Where(d => !d.StartsWith("./MiniatureGit"));
 
+            var headCommit = await InitRepository.GetHeadCommit();
+
             foreach (var file in files)
             {
-                await InitRepository.AddFileToStagingArea(file);
+                if (headCommit.Files.ContainsKey(file))
+                {
+                    var fileInDirSha = await FileSystemUtils.GetShaOfFileContent(file);
+                    if (!fileInDirSha.Equals(headCommit.Files[file]))
+                    {
+                        await InitRepository.AddFileToStagingArea(file);
+                    }
+                }
             }
         }
     }

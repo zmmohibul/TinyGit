@@ -39,6 +39,7 @@ namespace MiniatureGit.Repositories
             await FileSystemUtils.WriteObjectAsync<Commit>(newCommit, newCommitSha, InitRepository.CommitsDirectoryPath);
 
             await InitRepository.ChangeHeadAndCurrentBranch(newCommitSha);
+            await InitRepository.ClearStagingArea();
         }
 
         public static async Task Checkout(string commitId)

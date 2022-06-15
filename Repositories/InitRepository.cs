@@ -92,6 +92,12 @@ namespace MiniatureGit.Repositories
             return SA.FilesStagedForAddition;
         }
 
+        public static async Task ClearStagingArea()
+        {
+            SA = new StagingArea();
+            await FileSystemUtils.WriteObjectAsync<StagingArea>(SA, "StagingArea", $"./{MiniatureGitDirName}");
+        }
+
         public static bool IsGitRepo()
         {
             return Directory.Exists($"./{MiniatureGitDirName}");
