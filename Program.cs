@@ -50,6 +50,10 @@ namespace MiniatureGit
 
                 await CommitRepository.MakeCommit(args[1]);
             }
+            else if (firstArguemnt.Equals("log"))
+            {
+                await CommitRepository.LogCommits();
+            }
             else
             {
                 LogError.Log("Invalid command argument...");
