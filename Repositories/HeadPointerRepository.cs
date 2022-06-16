@@ -44,5 +44,11 @@ namespace MiniatureGit.Repositories
             var currentHeadState = new CurrentHeadState(detached);
             await FileSystemUtils.WriteObjectAsync<CurrentHeadState>(currentHeadState, CurrentHeadStateFileName, CurrentHeadStatePath);
         }
+
+        public static async Task<bool> IsHeadDetached()
+        {
+            var currentHeadState = await FileSystemUtils.ReadObjectAsync<CurrentHeadState>($"{CurrentHeadStatePath}/{CurrentHeadStateFileName}");
+            return currentHeadState.Detached;
+        }
     }
 }

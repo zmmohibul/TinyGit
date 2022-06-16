@@ -11,6 +11,11 @@ namespace MiniatureGit.Repositories
 
         public static async Task StageFile(string filePath)
         {
+            if (await HeadPointerRepository.IsHeadDetached())
+            {
+                LogError.Log($"You are in a detached head state!", "Checkout to tip of a branch before staging files.");
+            }
+
             if (!FileSystemUtils.FileExists(filePath))
             {
                 LogError.Log($"Could not find '{filePath}' in project directory...");
@@ -28,6 +33,11 @@ namespace MiniatureGit.Repositories
 
         public static async Task StageAllFiles()
         {
+            if (await HeadPointerRepository.IsHeadDetached())
+            {
+                LogError.Log($"You are in a detached head state!", "Checkout to tip of a branch before staging files.");
+            }
+            
             var files = Directory.GetFiles(".", "*.*", SearchOption.AllDirectories)
                 .Where(d => !d.StartsWith("./."))
                 .Where(d => !d.StartsWith("./MiniatureGit"));
