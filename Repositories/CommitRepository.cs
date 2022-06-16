@@ -7,7 +7,7 @@ namespace MiniatureGit.Repositories
     {
         public static async Task MakeCommit(string commitMessage)
         {
-            var fileModified = false;
+            var fileModifiedButNotTracked = false;
 
             var filesStagedForAddition = await InitRepository.GetFilesStagedForAddition();
             foreach (var (file, fileSha) in filesStagedForAddition)
@@ -18,7 +18,7 @@ namespace MiniatureGit.Repositories
                     if (!fileSha.Equals(fileInDirSha))
                     {
                         System.Console.WriteLine($"The file {file.Remove(0, 2)} has untracked changes since it was last staged.");
-                        fileModified = true;
+                        fileModifiedButNotTracked = true;
                         LogError.Log();
                     }
                 }
@@ -41,17 +41,33 @@ namespace MiniatureGit.Repositories
                     if (!fileSha.Equals(fileInDirSha))
                     {
                         System.Console.WriteLine($"The file {file.Remove(0, 2)} has been modified since last commit.");
-                        fileModified = true;
+                        fileModifiedButNotTracked = true;
                     }
                 }
             }
 
-            if (fileModified)
+            if (fileModifiedButNotTracked)
             {
                 LogError.Log("\nPlease add modified files and untracked changes to staging area before making commit.");
             }
 
-            
+            if (filesStagedForAddition.Count() == 0)
+            {
+                var noChangeSinceLastCommit = true;
+                foreach (var (file, fileSha) in headCommit.Files)
+                {
+                    var fileInDirSha = await FileSystemUtils.GetShaOfFileContent(file);
+                    if (!fileSha.Equals(fileInDirSha))
+                    {
+                        noChangeSinceLastCommit = false;
+                    }
+                }
+
+                if (noChangeSinceLastCommit)
+                {
+                    LogError.Log("No new changes to commit");
+                }
+            }
 
             var newCommit = CloneCommit(headCommit, commitMessage);
             foreach (var (file, fileSha) in filesStagedForAddition)
