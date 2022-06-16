@@ -25,7 +25,6 @@ namespace MiniatureGit.Repositories
         private static readonly string Master = Path.Join(Branches.FullName, "master");
 
         public static string StagingAreaPath { get; } = $"./{MiniatureGitDirName}/StagingArea";
-        private static StagingArea SA;
 
         public static async Task Init()
         {
@@ -47,15 +46,7 @@ namespace MiniatureGit.Repositories
             await File.WriteAllTextAsync(Master, initialCommitSha);
             await File.WriteAllTextAsync(Head, initialCommitSha);
             await File.WriteAllTextAsync(CurrentBranch, "master");
-
-
-            SA = new StagingArea();
-            await FileSystemUtils.WriteObjectAsync<StagingArea>(SA, "StagingArea", $"./{MiniatureGitDirName}");
-        }
-
-        public static async Task Setup()
-        {
-            SA = await FileSystemUtils.ReadObjectAsync<StagingArea>(StagingAreaPath);
+            await StagingRepository.Setup();
         }
 
         public static bool IsGitRepo()

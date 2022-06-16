@@ -80,7 +80,8 @@ namespace MiniatureGit.Repositories
 
         public static async Task Setup()
         {
-            SA = await FileSystemUtils.ReadObjectAsync<StagingArea>(InitRepository.StagingAreaPath);
+            SA = new StagingArea();
+            await FileSystemUtils.WriteObjectAsync<StagingArea>(SA, "StagingArea", $"./{InitRepository.MiniatureGitDirName}");
         }
     }
 }
