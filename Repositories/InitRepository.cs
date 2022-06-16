@@ -47,6 +47,7 @@ namespace MiniatureGit.Repositories
             await File.WriteAllTextAsync(Head, initialCommitSha);
             await File.WriteAllTextAsync(CurrentBranch, "master");
             await StagingRepository.Setup();
+            await HeadPointerRepository.Setup();
         }
 
         public static bool IsGitRepo()
