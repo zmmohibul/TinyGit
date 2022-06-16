@@ -103,10 +103,12 @@ namespace MiniatureGit.Repositories
                 if (branchCommitId.Equals(commitId))
                 {
                     HeadPointerRepository.DetachedHeadState = false;
+                    await HeadPointerRepository.ChangeHeadDetachedState(false);
                 }
                 else
                 {
                     HeadPointerRepository.DetachedHeadState = true;
+                    await HeadPointerRepository.ChangeHeadDetachedState(true);
                 }
             }
 
@@ -124,6 +126,7 @@ namespace MiniatureGit.Repositories
             var commitId = await File.ReadAllTextAsync(Path.Join(InitRepository.BranchesDirectoryPath, branchName));
 
             HeadPointerRepository.DetachedHeadState = false;
+            await HeadPointerRepository.ChangeHeadDetachedState(false);
 
             await CheckoutCommit(commitId);
         }

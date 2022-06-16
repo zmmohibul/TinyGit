@@ -13,6 +13,9 @@ namespace MiniatureGit.Repositories
 
         public static bool DetachedHeadState { get; set; }
 
+        private static readonly string CurrentHeadStatePath = $"./{InitRepository.MiniatureGitDirName}";
+        private static readonly string CurrentHeadStateFileName = "CurrHeadState";
+
         private static readonly string Head = $"./{InitRepository.MiniatureGitDirName}/HEAD";
         private static readonly string CurrentBranch = $"./{InitRepository.MiniatureGitDirName}/CurrentBranch";
         private static readonly string Master = Path.Join(Branches.FullName, "master");
@@ -34,6 +37,12 @@ namespace MiniatureGit.Repositories
             await File.WriteAllTextAsync(Head, newCommitSha);
             var currentBranch = await File.ReadAllTextAsync(CurrentBranch);
             await File.WriteAllTextAsync(Path.Join(BranchesDirectoryPath, currentBranch), newCommitSha);
+        }
+
+        public static async Task ChangeHeadDetachedState(bool detached)
+        {
+            var currentHeadState = new CurrentHeadState(detached);
+            await FileSystemUtils.WriteObjectAsync<CurrentHeadState>(currentHeadState, CurrentHeadStateFileName, CurrentHeadStatePath);
         }
     }
 }
