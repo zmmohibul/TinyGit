@@ -19,9 +19,6 @@ namespace MiniatureGit.Repositories
         public static string BranchesDirectoryPath { get; } = $"./{MiniatureGitDirName}/branches";
         private static readonly DirectoryInfo Branches = new DirectoryInfo(BranchesDirectoryPath);
 
-        public static bool DetachedHeadState { get; set; }
-        
-        
 
         private static readonly string Head = Path.Join(MiniatureGit.FullName, "HEAD");
         private static readonly string CurrentBranch = Path.Join(MiniatureGit.FullName, "CurrentBranch");
@@ -74,25 +71,6 @@ namespace MiniatureGit.Repositories
             SA.FilesStagedForAddition[filePath] = fileContentSha;
 
             await FileSystemUtils.WriteObjectAsync<StagingArea>(SA, "StagingArea", $"./{MiniatureGitDirName}");
-        }
-
-        public static async Task<Commit> GetHeadCommit()
-        {
-            var headCommitSha = await File.ReadAllTextAsync(Head);
-            var headCommit = await FileSystemUtils.ReadObjectAsync<Commit>($"{CommitsDirectoryPath}/{headCommitSha}");
-            return headCommit;
-        }
-
-        public static async Task ChangeHead(string newCommitSha)
-        {
-            await File.WriteAllTextAsync(Head, newCommitSha);
-        }
-
-        public static async Task ChangeHeadAndCurrentBranch(string newCommitSha)
-        {
-            await File.WriteAllTextAsync(Head, newCommitSha);
-            var currentBranch = await File.ReadAllTextAsync(CurrentBranch);
-            await File.WriteAllTextAsync(Path.Join(BranchesDirectoryPath, currentBranch), newCommitSha);
         }
 
         public static async Task<Dictionary<string, string>> GetFilesStagedForAddition()

@@ -24,7 +24,7 @@ namespace MiniatureGit.Repositories
                 }
             }
 
-            var headCommit = await InitRepository.GetHeadCommit();
+            var headCommit = await HeadPointerRepository.GetHeadCommit();
             foreach (var (file, fileSha) in headCommit.Files)
             {
                 if (File.Exists(file))
@@ -84,7 +84,7 @@ namespace MiniatureGit.Repositories
             var newCommitSha = FileSystemUtils.GetSha1FromObject<Commit>(newCommit);
             await FileSystemUtils.WriteObjectAsync<Commit>(newCommit, newCommitSha, InitRepository.CommitsDirectoryPath);
 
-            await InitRepository.ChangeHeadAndCurrentBranch(newCommitSha);
+            await HeadPointerRepository.ChangeHeadAndCurrentBranch(newCommitSha);
             await InitRepository.ClearStagingArea();
         }
 
@@ -102,11 +102,11 @@ namespace MiniatureGit.Repositories
                 var branchCommitId = await File.ReadAllTextAsync(branch);
                 if (branchCommitId.Equals(commitId))
                 {
-                    InitRepository.DetachedHeadState = false;
+                    HeadPointerRepository.DetachedHeadState = false;
                 }
                 else
                 {
-                    InitRepository.DetachedHeadState = true;
+                    HeadPointerRepository.DetachedHeadState = true;
                 }
             }
 
@@ -123,7 +123,7 @@ namespace MiniatureGit.Repositories
 
             var commitId = await File.ReadAllTextAsync(Path.Join(InitRepository.BranchesDirectoryPath, branchName));
 
-            InitRepository.DetachedHeadState = false;
+            HeadPointerRepository.DetachedHeadState = false;
 
             await CheckoutCommit(commitId);
         }
@@ -162,12 +162,12 @@ namespace MiniatureGit.Repositories
                 await File.WriteAllBytesAsync(file, fileContent);
             }
 
-            if (InitRepository.DetachedHeadState)
+            if (HeadPointerRepository.DetachedHeadState)
             {
                 System.Console.WriteLine("Warning! You're in a detached head state");
             }
 
-            await InitRepository.ChangeHead(commitId);
+            await HeadPointerRepository.ChangeHead(commitId);
         }
 
         private static Commit CloneCommit(Commit commitToClone, string newCommitMessage)

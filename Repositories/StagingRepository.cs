@@ -30,7 +30,7 @@ namespace MiniatureGit.Repositories
                 .Where(d => !d.StartsWith("./."))
                 .Where(d => !d.StartsWith("./MiniatureGit"));
 
-            var headCommit = await InitRepository.GetHeadCommit();
+            var headCommit = await HeadPointerRepository.GetHeadCommit();
 
             foreach (var file in files)
             {
