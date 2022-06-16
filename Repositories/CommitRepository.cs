@@ -96,6 +96,20 @@ namespace MiniatureGit.Repositories
                 LogError.Log("Invalid Commit Id...");
             }
 
+            var branches = Directory.GetFiles(InitRepository.BranchesDirectoryPath);
+            foreach (var branch in branches)
+            {
+                var branchCommitId = await File.ReadAllTextAsync(branch);
+                if (branchCommitId.Equals(commitId))
+                {
+                    InitRepository.DetachedHeadState = false;
+                }
+                else
+                {
+                    InitRepository.DetachedHeadState = true;
+                }
+            }
+
             await CheckoutCommit(commitId);
         }
 
@@ -108,6 +122,8 @@ namespace MiniatureGit.Repositories
             }
 
             var commitId = await File.ReadAllTextAsync(Path.Join(InitRepository.BranchesDirectoryPath, branchName));
+
+            InitRepository.DetachedHeadState = false;
 
             await CheckoutCommit(commitId);
         }
@@ -145,6 +161,13 @@ namespace MiniatureGit.Repositories
                 var fileContent = await File.ReadAllBytesAsync(Path.Join(InitRepository.FilesDirectoryPath, fileSha));
                 await File.WriteAllBytesAsync(file, fileContent);
             }
+
+            if (InitRepository.DetachedHeadState)
+            {
+                System.Console.WriteLine("Warning! You're in a detached head state");
+            }
+
+            await InitRepository.ChangeHead(commitId);
         }
 
         private static Commit CloneCommit(Commit commitToClone, string newCommitMessage)

@@ -18,7 +18,11 @@ namespace MiniatureGit.Repositories
 
         public static string BranchesDirectoryPath { get; } = $"./{MiniatureGitDirName}/branches";
         private static readonly DirectoryInfo Branches = new DirectoryInfo(BranchesDirectoryPath);
+
+        public static bool DetachedHeadState { get; set; }
         
+        
+
         private static readonly string Head = Path.Join(MiniatureGit.FullName, "HEAD");
         private static readonly string CurrentBranch = Path.Join(MiniatureGit.FullName, "CurrentBranch");
         private static readonly string Master = Path.Join(Branches.FullName, "master");
@@ -77,6 +81,11 @@ namespace MiniatureGit.Repositories
             var headCommitSha = await File.ReadAllTextAsync(Head);
             var headCommit = await FileSystemUtils.ReadObjectAsync<Commit>($"{CommitsDirectoryPath}/{headCommitSha}");
             return headCommit;
+        }
+
+        public static async Task ChangeHead(string newCommitSha)
+        {
+            await File.WriteAllTextAsync(Head, newCommitSha);
         }
 
         public static async Task ChangeHeadAndCurrentBranch(string newCommitSha)
