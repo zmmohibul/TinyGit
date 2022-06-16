@@ -34,6 +34,7 @@ namespace MiniatureGit.Repositories
 
             foreach (var file in files)
             {
+                System.Console.WriteLine(file);
                 if (headCommit.Files.ContainsKey(file))
                 {
                     var fileInDirSha = await FileSystemUtils.GetShaOfFileContent(file);
@@ -41,6 +42,10 @@ namespace MiniatureGit.Repositories
                     {
                         await InitRepository.AddFileToStagingArea(file);
                     }
+                }
+                else
+                {
+                    await InitRepository.AddFileToStagingArea(file);
                 }
             }
         }

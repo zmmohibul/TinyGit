@@ -7,9 +7,7 @@ namespace MiniatureGit.Repositories
     {
         public static async Task MakeCommit(string commitMessage)
         {
-            var headCommit = await InitRepository.GetHeadCommit();
-
-            var newCommit = CloneCommit(headCommit, commitMessage);
+            var fileModified = false;
 
             var filesStagedForAddition = await InitRepository.GetFilesStagedForAddition();
             foreach (var (file, fileSha) in filesStagedForAddition)
@@ -19,11 +17,43 @@ namespace MiniatureGit.Repositories
                     var fileInDirSha = await FileSystemUtils.GetShaOfFileContent(file);
                     if (!fileSha.Equals(fileInDirSha))
                     {
-                        LogError.Log($"The file {file.Remove(0, 2)} has been modified since last staging.");
+                        System.Console.WriteLine($"The file {file.Remove(0, 2)} has untracked changes since it was last staged.");
+                        fileModified = true;
+                        LogError.Log();
                     }
                 }
             }
 
+            var headCommit = await InitRepository.GetHeadCommit();
+            foreach (var (file, fileSha) in headCommit.Files)
+            {
+                if (File.Exists(file))
+                {
+                    var fileInDirSha = await FileSystemUtils.GetShaOfFileContent(file);
+
+                    if (filesStagedForAddition.ContainsKey(file))
+                    {
+                        if (filesStagedForAddition[file].Equals(fileInDirSha))
+                        {
+                            continue;
+                        }
+                    }
+                    if (!fileSha.Equals(fileInDirSha))
+                    {
+                        System.Console.WriteLine($"The file {file.Remove(0, 2)} has been modified since last commit.");
+                        fileModified = true;
+                    }
+                }
+            }
+
+            if (fileModified)
+            {
+                LogError.Log("\nPlease add modified files and untracked changes to staging area before making commit.");
+            }
+
+            
+
+            var newCommit = CloneCommit(headCommit, commitMessage);
             foreach (var (file, fileSha) in filesStagedForAddition)
             {
                 newCommit.Files[file] = fileSha;
