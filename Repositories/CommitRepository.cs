@@ -9,7 +9,7 @@ namespace MiniatureGit.Repositories
         {
             var fileModifiedButNotTracked = false;
 
-            var filesStagedForAddition = await InitRepository.GetFilesStagedForAddition();
+            var filesStagedForAddition = await StagingRepository.GetFilesStagedForAddition();
             foreach (var (file, fileSha) in filesStagedForAddition)
             {
                 if (File.Exists(file))
@@ -85,7 +85,7 @@ namespace MiniatureGit.Repositories
             await FileSystemUtils.WriteObjectAsync<Commit>(newCommit, newCommitSha, InitRepository.CommitsDirectoryPath);
 
             await HeadPointerRepository.ChangeHeadAndCurrentBranch(newCommitSha);
-            await InitRepository.ClearStagingArea();
+            await StagingRepository.ClearStagingArea();
         }
 
         public static async Task Checkout(string commitId)

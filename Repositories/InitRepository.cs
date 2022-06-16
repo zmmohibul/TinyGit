@@ -58,33 +58,6 @@ namespace MiniatureGit.Repositories
             SA = await FileSystemUtils.ReadObjectAsync<StagingArea>(StagingAreaPath);
         }
 
-        public static async Task AddFileToStagingArea(string filePath)
-        {
-            if (!File.Exists(filePath))
-            {
-                throw new FileNotFoundException();
-            }
-
-            var fileContentSha = await FileSystemUtils.GetShaOfFileContent(filePath);
-
-            SA = await FileSystemUtils.ReadObjectAsync<StagingArea>(StagingAreaPath);
-            SA.FilesStagedForAddition[filePath] = fileContentSha;
-
-            await FileSystemUtils.WriteObjectAsync<StagingArea>(SA, "StagingArea", $"./{MiniatureGitDirName}");
-        }
-
-        public static async Task<Dictionary<string, string>> GetFilesStagedForAddition()
-        {
-            SA = await FileSystemUtils.ReadObjectAsync<StagingArea>(StagingAreaPath);
-            return SA.FilesStagedForAddition;
-        }
-
-        public static async Task ClearStagingArea()
-        {
-            SA = new StagingArea();
-            await FileSystemUtils.WriteObjectAsync<StagingArea>(SA, "StagingArea", $"./{MiniatureGitDirName}");
-        }
-
         public static bool IsGitRepo()
         {
             return Directory.Exists($"./{MiniatureGitDirName}");
