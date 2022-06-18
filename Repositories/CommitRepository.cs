@@ -3,7 +3,7 @@ using MiniatureGit.Utils;
 
 namespace MiniatureGit.Repositories
 {
-    public class CommitRepository
+    public class CommitRepository : MainRepository
     {
         public static async Task MakeCommit(string commitMessage)
         {
@@ -127,12 +127,10 @@ namespace MiniatureGit.Repositories
                 var branchCommitId = await File.ReadAllTextAsync(branch);
                 if (branchCommitId.Equals(commitId))
                 {
-                    HeadPointerRepository.DetachedHeadState = false;
                     await HeadPointerRepository.ChangeHeadDetachedState(false);
                 }
                 else
                 {
-                    HeadPointerRepository.DetachedHeadState = true;
                     await HeadPointerRepository.ChangeHeadDetachedState(true);
                 }
             }
@@ -163,8 +161,9 @@ namespace MiniatureGit.Repositories
 
             var commitId = await File.ReadAllTextAsync(Path.Join(InitRepository.BranchesDirectoryPath, branchName));
 
-            HeadPointerRepository.DetachedHeadState = false;
             await HeadPointerRepository.ChangeHeadDetachedState(false);
+
+            await HeadPointerRepository.ChangeCurrentBranch(branchName);
 
             await CheckoutCommit(commitId);
         }
@@ -189,7 +188,7 @@ namespace MiniatureGit.Repositories
                 await File.WriteAllBytesAsync(file, fileContent);
             }
 
-            if (HeadPointerRepository.DetachedHeadState)
+            if (await HeadPointerRepository.IsHeadDetached())
             {
                 System.Console.WriteLine("Warning! You're in a detached head state");
             }

@@ -5,7 +5,7 @@ using MiniatureGit.Utils;
 
 namespace MiniatureGit.Repositories
 {
-    public class StagingRepository
+    public class StagingRepository : MainRepository
     {
         private static StagingArea SA;
 
@@ -70,28 +70,28 @@ namespace MiniatureGit.Repositories
 
             var fileContentSha = await FileSystemUtils.GetShaOfFileContent(filePath);
 
-            SA = await FileSystemUtils.ReadObjectAsync<StagingArea>(InitRepository.StagingAreaPath);
+            SA = await FileSystemUtils.ReadObjectAsync<StagingArea>(StagingAreaPath);
             SA.FilesStagedForAddition[filePath] = fileContentSha;
 
-            await FileSystemUtils.WriteObjectAsync<StagingArea>(SA, "StagingArea", $"./{InitRepository.MiniatureGitDirName}");
+            await FileSystemUtils.WriteObjectAsync<StagingArea>(SA, "StagingArea", $"./{MiniatureGitDirName}");
         }
 
         public static async Task<Dictionary<string, string>> GetFilesStagedForAddition()
         {
-            SA = await FileSystemUtils.ReadObjectAsync<StagingArea>(InitRepository.StagingAreaPath);
+            SA = await FileSystemUtils.ReadObjectAsync<StagingArea>(StagingAreaPath);
             return SA.FilesStagedForAddition;
         }
 
         public static async Task ClearStagingArea()
         {
             SA = new StagingArea();
-            await FileSystemUtils.WriteObjectAsync<StagingArea>(SA, "StagingArea", $"./{InitRepository.MiniatureGitDirName}");
+            await FileSystemUtils.WriteObjectAsync<StagingArea>(SA, "StagingArea", $"./{MiniatureGitDirName}");
         }
 
         public static async Task Setup()
         {
             SA = new StagingArea();
-            await FileSystemUtils.WriteObjectAsync<StagingArea>(SA, "StagingArea", $"./{InitRepository.MiniatureGitDirName}");
+            await FileSystemUtils.WriteObjectAsync<StagingArea>(SA, "StagingArea", $"./{MiniatureGitDirName}");
         }
     }
 }

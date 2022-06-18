@@ -5,26 +5,12 @@ using MiniatureGit.Utils;
 
 namespace MiniatureGit.Repositories
 {
-    public class InitRepository
+    public class InitRepository : MainRepository
     {
-        public static string MiniatureGitDirName { get; } = ".minigit";
-        private static readonly DirectoryInfo MiniatureGit = new DirectoryInfo(MiniatureGitDirName);
-
-        public static string FilesDirectoryPath { get; } = $"./{MiniatureGitDirName}/files";
-        private static readonly DirectoryInfo Files = new DirectoryInfo(Path.Join(MiniatureGit.FullName, "files"));
-        
-        public static string CommitsDirectoryPath { get; } = $"./{MiniatureGitDirName}/commits";
-        private static readonly DirectoryInfo Commits = new DirectoryInfo(CommitsDirectoryPath);
-
-        public static string BranchesDirectoryPath { get; } = $"./{MiniatureGitDirName}/branches";
-        private static readonly DirectoryInfo Branches = new DirectoryInfo(BranchesDirectoryPath);
-
-
-        private static readonly string Head = Path.Join(MiniatureGit.FullName, "HEAD");
-        private static readonly string CurrentBranch = Path.Join(MiniatureGit.FullName, "CurrentBranch");
-        private static readonly string Master = Path.Join(Branches.FullName, "master");
-
-        public static string StagingAreaPath { get; } = $"./{MiniatureGitDirName}/StagingArea";
+        protected static readonly DirectoryInfo MiniatureGit = new DirectoryInfo(MiniatureGitDirName);
+        protected static readonly DirectoryInfo Files = new DirectoryInfo(Path.Join(MiniatureGit.FullName, "files"));
+        protected static readonly DirectoryInfo Commits = new DirectoryInfo(CommitsDirectoryPath);
+        protected static readonly DirectoryInfo Branches = new DirectoryInfo(BranchesDirectoryPath);
 
         public static async Task Init()
         {
