@@ -32,6 +32,8 @@ namespace MiniatureGit.Repositories
             await File.WriteAllTextAsync(Master, initialCommitSha);
             await File.WriteAllTextAsync(Head, initialCommitSha);
             await File.WriteAllTextAsync(CurrentBranch, "master");
+            await File.WriteAllTextAsync(RootCommit, initialCommitSha);
+            
             await StagingRepository.Setup();
             await HeadPointerRepository.Setup();
         }

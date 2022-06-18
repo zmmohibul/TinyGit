@@ -83,6 +83,15 @@ namespace MiniatureGit
 
                 await BranchingRepository.CreateNewBranch(args[1]);
             }
+            else if (firstArguemnt.Equals("merge"))
+            {
+                if (args.Length < 2)
+                {
+                    LogError.Log("Please enter a branch name");
+                }
+                
+                await BranchingRepository.MergeBranch(args[1]);
+            }
             else
             {
                 LogError.Log("Invalid command argument...");

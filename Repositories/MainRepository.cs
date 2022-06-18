@@ -8,6 +8,8 @@ namespace MiniatureGit.Repositories
         protected static string BranchesDirectoryPath { get; } = $"./{MiniatureGitDirName}/branches";
         
         protected static readonly string Head = Path.Join(MiniatureGitDirName, "HEAD");
+        protected static readonly string RootCommit = Path.Join(MiniatureGitDirName, "RootCommit");
+
         protected static readonly string CurrentHeadStatePath = $"./{MiniatureGitDirName}";
         protected static readonly string CurrentHeadStateFileName = "CurrHeadState";
 
