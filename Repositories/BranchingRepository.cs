@@ -1,3 +1,4 @@
+using MiniatureGit.Core;
 using MiniatureGit.Utils;
 
 namespace MiniatureGit.Repositories
@@ -34,8 +35,32 @@ namespace MiniatureGit.Repositories
 
         private static async Task LeastCommonAncestor(string commitId1, string commitId2)
         {
-            System.Console.WriteLine(commitId1);
-            System.Console.WriteLine(commitId2);
+            // System.Console.WriteLine(commitId1);
+            // System.Console.WriteLine(commitId2);
+
+            var rootCommitId = await File.ReadAllTextAsync(RootCommit);
+
+            var currCommitId = commitId1;
+            
+            var currCommit = await FileSystemUtils.ReadObjectAsync<Commit>($"{CommitsDirectoryPath}/{commitId1}");
+            System.Console.WriteLine(currCommit.CommitMessage);
+            var commitId1ToRootPath = new Dictionary<string, string>();
+            while (true)
+            {
+                commitId1ToRootPath[currCommitId] = currCommit.Parent;
+                if (string.IsNullOrEmpty(currCommit.Parent))
+                {
+                    break;
+                }
+                
+                currCommitId = currCommit.Parent;;
+                currCommit = await FileSystemUtils.ReadObjectAsync<Commit>($"{CommitsDirectoryPath}/{currCommitId}");
+            }
+
+            foreach (var (key, value) in commitId1ToRootPath)
+            {
+                System.Console.WriteLine($"{key} --- {value}");
+            }
         }
 
     }
