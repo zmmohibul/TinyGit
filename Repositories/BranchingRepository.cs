@@ -41,9 +41,7 @@ namespace MiniatureGit.Repositories
             var rootCommitId = await File.ReadAllTextAsync(RootCommit);
 
             var currCommitId = commitId1;
-            
-            var currCommit = await FileSystemUtils.ReadObjectAsync<Commit>($"{CommitsDirectoryPath}/{commitId1}");
-            System.Console.WriteLine(currCommit.CommitMessage);
+            var currCommit = await FileSystemUtils.ReadObjectAsync<Commit>($"{CommitsDirectoryPath}/{currCommitId}");
             var commitId1ToRootPath = new Dictionary<string, string>();
             while (true)
             {
@@ -60,6 +58,27 @@ namespace MiniatureGit.Repositories
             foreach (var (key, value) in commitId1ToRootPath)
             {
                 System.Console.WriteLine($"{key} --- {value}");
+            }
+
+
+            currCommitId = commitId2;
+            currCommit = await FileSystemUtils.ReadObjectAsync<Commit>($"{CommitsDirectoryPath}/{currCommitId}");
+            var commitId2ToRootPath = new Dictionary<string, string>();
+            while (true)
+            {
+                if (commitId1ToRootPath.ContainsKey(currCommitId))
+                {
+                    System.Console.WriteLine($"LCA is {currCommitId}");
+                    break;
+                }
+                // commitId1ToRootPath[currCommitId] = currCommit.Parent;
+                // if (string.IsNullOrEmpty(currCommit.Parent))
+                // {
+                //     break;
+                // }
+                
+                currCommitId = currCommit.Parent;;
+                currCommit = await FileSystemUtils.ReadObjectAsync<Commit>($"{CommitsDirectoryPath}/{currCommitId}");
             }
         }
 
