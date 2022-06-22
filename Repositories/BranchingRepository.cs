@@ -35,6 +35,7 @@ namespace MiniatureGit.Repositories
             var givenBranchHeadCommit = await FileSystemUtils.ReadObjectAsync<Commit>($"{CommitsDirectoryPath}/{givenBranchCommitId}");
 
             var lcaCommit = await LeastCommonAncestor(currentBranchCommitId, givenBranchCommitId);
+            System.Console.WriteLine(lcaCommit.CommitMessage);
 
             // var mergedCommit = new Commit
 
@@ -84,13 +85,14 @@ namespace MiniatureGit.Repositories
             var commitId1ToRootPath = new Dictionary<string, string>();
             while (true)
             {
-                commitId1ToRootPath[currCommitId] = currCommit.Parent;
-                if (string.IsNullOrEmpty(currCommit.Parent))
+
+                commitId1ToRootPath[currCommitId] = currCommit.Parents[0];
+                if (string.IsNullOrEmpty(currCommit.Parents[0]))
                 {
                     break;
                 }
                 
-                currCommitId = currCommit.Parent;;
+                currCommitId = currCommit.Parents[0];
                 currCommit = await FileSystemUtils.ReadObjectAsync<Commit>($"{CommitsDirectoryPath}/{currCommitId}");
             }
 
@@ -107,7 +109,7 @@ namespace MiniatureGit.Repositories
                     break;
                 }
                 
-                currCommitId = currCommit.Parent;;
+                currCommitId = currCommit.Parents[0];
                 currCommit = await FileSystemUtils.ReadObjectAsync<Commit>($"{CommitsDirectoryPath}/{currCommitId}");
             }
 

@@ -6,7 +6,7 @@ namespace MiniatureGit.Core
         
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        public string Parent { get; set; }
+        // public string Parent { get; set; }
 
         public List<string> Parents { get; set; }
         
@@ -20,15 +20,16 @@ namespace MiniatureGit.Core
         public Commit()
         {
             CommitMessage = "Initial Commit";
-            Parent = string.Empty;
+            // Parent = string.Empty;
             Files = new Dictionary<string, string>();
             Parents = new List<string>();
+            Parents.Add(string.Empty);
         }
 
         public Commit(string commitMessage, string parent)
         {
             CommitMessage = commitMessage;
-            Parent = parent;
+            // Parent = parent;
             Files = new Dictionary<string, string>();
 
             Parents = new List<string>();
