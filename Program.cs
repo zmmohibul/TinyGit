@@ -22,6 +22,19 @@ namespace MiniatureGit
             {
                 LogError.Log("This is not an initialized git repository");
             }
+            else if (firstArguemnt.Equals("commit"))
+            {
+                if (args.Length < 2)
+                {
+                    LogError.Log("Please enter a commit message");
+                }
+
+                await CommitRepository.MakeCommit(args[1]);
+            }
+            else if (File.Exists("./.minigit/UnmergedCommit"))
+            {
+                LogError.Log("Please resolve merge conflict and make a commit");
+            }
             else if (firstArguemnt.Equals("add"))
             {
                 if (args.Length < 2)
@@ -40,15 +53,6 @@ namespace MiniatureGit
                     await StagingRepository.StageFile(fileToStage);
                 }
 
-            }
-            else if (firstArguemnt.Equals("commit"))
-            {
-                if (args.Length < 2)
-                {
-                    LogError.Log("Please enter a commit message");
-                }
-
-                await CommitRepository.MakeCommit(args[1]);
             }
             else if (firstArguemnt.Equals("log"))
             {

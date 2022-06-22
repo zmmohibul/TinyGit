@@ -35,5 +35,18 @@ namespace MiniatureGit.Core
             Parents = new List<string>();
             Parents.Add(parent);
         }
+
+        public Commit(string commitMessage, List<string> parents)
+        {
+            CommitMessage = commitMessage;
+            // Parent = parent;
+            Files = new Dictionary<string, string>();
+
+            Parents = new List<string>();
+            foreach (var parent in parents)
+            {
+                Parents.Add(parent);
+            }
+        }
     }
 }

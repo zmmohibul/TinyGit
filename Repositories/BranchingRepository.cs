@@ -37,7 +37,10 @@ namespace MiniatureGit.Repositories
             var lcaCommit = await LeastCommonAncestor(currentBranchCommitId, givenBranchCommitId);
             System.Console.WriteLine(lcaCommit.CommitMessage);
 
-            // var mergedCommit = new Commit
+            var mergedCommitParents = new List<string>();
+            mergedCommitParents.Add(currentBranchCommitId);
+            mergedCommitParents.Add(givenBranchCommitId);
+            var mergedCommit = new Commit($"Merged {currentBranchName} and {givenBranchName}", mergedCommitParents);
 
             // MERGE CONDITION CHECKS
             // 1. Any files that have been modified in the given branch since the split point, but not modified in the current branch since the split point should be changed to their versions in the given branch
@@ -49,7 +52,8 @@ namespace MiniatureGit.Repositories
                     var fileShaInCurrentBranch = currentBranchHeadCommit.Files[file];
                     if (!fileSha.Equals(fileShaInLca) && fileShaInCurrentBranch.Equals(fileShaInLca))
                     {
-                        await StagingRepository.AddFileToStagingArea(file);
+                        mergedCommit.Files[file] = fileSha;
+                        await StagingRepository.AddFileToStagingAreaWithSha(file, fileSha);
                     }
                 }
             }
@@ -63,7 +67,8 @@ namespace MiniatureGit.Repositories
                     var fileShaInGivenBranch = givenBranchHeadCommit.Files[file];
                     if (!fileSha.Equals(fileShaInLca) && fileShaInGivenBranch.Equals(fileShaInLca))
                     {
-                        await StagingRepository.AddFileToStagingArea(file);
+                        mergedCommit.Files[file] = fileSha;
+                        await StagingRepository.AddFileToStagingAreaWithSha(file, fileSha);
                     }
                 }
             }
@@ -71,7 +76,95 @@ namespace MiniatureGit.Repositories
             // 3. Any files that have been modified in both the current and given branch in the same way are left unchanged by the merge
             foreach (var (file, fileSha) in givenBranchHeadCommit.Files)
             {
+                if (currentBranchHeadCommit.Files.ContainsKey(file))
+                {
+                    var fileShaInCurrentBranch = currentBranchHeadCommit.Files[file];
+                    if (fileSha.Equals(fileShaInCurrentBranch))
+                    {
+                        mergedCommit.Files[file] = fileSha;
+                        await StagingRepository.AddFileToStagingAreaWithSha(file, fileSha);
+                    }
+                }
 
+            }
+
+            // 4. Any files that were not present at the split point and are present only in the current branch should remain as they are.
+            foreach (var (file, fileSha) in currentBranchHeadCommit.Files)
+            {
+                if (!lcaCommit.Files.ContainsKey(file) && !givenBranchHeadCommit.Files.ContainsKey(file))
+                {
+                    mergedCommit.Files[file] = fileSha;
+                    await StagingRepository.AddFileToStagingAreaWithSha(file, fileSha);
+                }
+            }
+
+            // 5. Any files that were not present at the split point and are present only in the given branch should be checked out and staged
+            foreach (var (file, fileSha) in givenBranchHeadCommit.Files)
+            {
+                if (!lcaCommit.Files.ContainsKey(file) && !currentBranchHeadCommit.Files.ContainsKey(file))
+                {
+                    mergedCommit.Files[file] = fileSha;
+                    await StagingRepository.AddFileToStagingAreaWithSha(file, fileSha);
+                }
+            }
+
+            // 6. Any files present at the split point, unmodified in the current branch, and absent in the given branch should be removed 
+            foreach (var (file, fileSha) in currentBranchHeadCommit.Files)
+            {
+                if (lcaCommit.Files.ContainsKey(file) && !givenBranchHeadCommit.Files.ContainsKey(file))
+                {
+                    if (lcaCommit.Files[file].Equals(fileSha))
+                    {
+                        await StagingRepository.StageFileForRemoval(file);
+                    }
+                }
+            }
+
+            // 7. Any files present at the split point, unmodified in the given branch, and absent in the current branch should remain absent
+            foreach (var (file, fileSha) in givenBranchHeadCommit.Files)
+            {
+                if (lcaCommit.Files.ContainsKey(file) && !currentBranchHeadCommit.Files.ContainsKey(file))
+                {
+                    if (lcaCommit.Files[file].Equals(fileSha))
+                    {
+                        await StagingRepository.StageFileForRemoval(file);
+                    }
+                }
+            }
+
+            // 8. Merge Coinflict
+            var mergeConfilct = false;
+            var mergeConfilctData = new MergeConfilctData();
+            foreach (var (file, fileSha) in currentBranchHeadCommit.Files)
+            {
+                if (givenBranchHeadCommit.Files.ContainsKey(file) && !givenBranchHeadCommit.Files[file].Equals(fileSha))
+                {
+                    System.Console.WriteLine($"Merge confilct encounterd in file {file}");
+
+                    if (File.Exists(file))
+                    {
+                        File.Delete(file);
+                    }
+
+                    await File.WriteAllTextAsync(file, "<<<<<<<<<<<HEAD\n");
+
+                    var contentInCurrentBranch = await File.ReadAllTextAsync(Path.Join(FilesDirectoryPath, fileSha));
+                    await File.AppendAllTextAsync(file, contentInCurrentBranch);
+
+                    await File.AppendAllTextAsync(file, "===============================================================\n");
+
+                    var contentInGivenBranch = await File.ReadAllTextAsync(Path.Join(FilesDirectoryPath, givenBranchHeadCommit.Files[file]));
+                    await File.AppendAllTextAsync(file, contentInGivenBranch);
+
+                    mergeConfilctData.FilesInConflict.Add(file);
+                    mergeConfilct = true;
+                }
+            }
+
+            if (mergeConfilct)
+            {
+                await FileSystemUtils.WriteObjectAsync<Commit>(mergedCommit, "UnmergedCommit", MiniatureGitDirName);
+                await FileSystemUtils.WriteObjectAsync<MergeConfilctData>(mergeConfilctData, "MergeConflictData", MiniatureGitDirName);
             }
 
         }

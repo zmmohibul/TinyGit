@@ -76,6 +76,18 @@ namespace MiniatureGit.Repositories
             await FileSystemUtils.WriteObjectAsync<StagingArea>(SA, "StagingArea", $"./{MiniatureGitDirName}");
         }
 
+        public static async Task AddFileToStagingAreaWithSha(string filePath, string fileSha)
+        {
+            if (!File.Exists(filePath))
+            {
+                throw new FileNotFoundException();
+            }
+
+            SA.FilesStagedForAddition[filePath] = fileSha;
+
+            await FileSystemUtils.WriteObjectAsync<StagingArea>(SA, "StagingArea", $"./{MiniatureGitDirName}");
+        }
+
         public static async Task StageFileForRemoval(string filePath)
         {
             if (!File.Exists(filePath))

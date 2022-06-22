@@ -12,6 +12,9 @@ namespace MiniatureGit.Repositories
         protected static readonly string Head = Path.Join(MiniatureGitDirName, "HEAD");
         protected static readonly string RootCommit = Path.Join(MiniatureGitDirName, "RootCommit");
 
+        protected static readonly string UnmergedCommit = Path.Join(MiniatureGitDirName, "UnmergedCommit");
+        protected static readonly string MergeConfilctData = Path.Join(MiniatureGitDirName, "MergeConflictData");
+
         protected static readonly string CurrentHeadStatePath = $"./{MiniatureGitDirName}";
         protected static readonly string CurrentHeadStateFileName = "CurrHeadState";
 
