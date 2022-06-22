@@ -3,7 +3,7 @@ using MiniatureGit.Utils;
 
 namespace MiniatureGit.Repositories
 {
-    public class CommitRepository : MainRepository
+    public class CommitRepository : CommonRepository
     {
         public static async Task MakeCommit(string commitMessage)
         {

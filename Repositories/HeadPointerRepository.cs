@@ -3,7 +3,7 @@ using MiniatureGit.Utils;
 
 namespace MiniatureGit.Repositories
 {
-    public class HeadPointerRepository : MainRepository
+    public class HeadPointerRepository : CommonRepository
     {
         public static async Task<Commit> GetHeadCommit()
         {

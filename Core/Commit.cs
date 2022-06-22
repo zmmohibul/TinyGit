@@ -8,6 +8,10 @@ namespace MiniatureGit.Core
 
         public string Parent { get; set; }
 
+        public List<string> Parents { get; set; }
+        
+        
+
         /*
         * A Dictionary with key as file name and value as sha of file content 
         */
@@ -18,6 +22,7 @@ namespace MiniatureGit.Core
             CommitMessage = "Initial Commit";
             Parent = string.Empty;
             Files = new Dictionary<string, string>();
+            Parents = new List<string>();
         }
 
         public Commit(string commitMessage, string parent)
@@ -25,6 +30,9 @@ namespace MiniatureGit.Core
             CommitMessage = commitMessage;
             Parent = parent;
             Files = new Dictionary<string, string>();
+
+            Parents = new List<string>();
+            Parents.Add(parent);
         }
     }
 }

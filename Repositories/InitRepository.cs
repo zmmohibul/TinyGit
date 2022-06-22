@@ -5,7 +5,7 @@ using MiniatureGit.Utils;
 
 namespace MiniatureGit.Repositories
 {
-    public class InitRepository : MainRepository
+    public class InitRepository : CommonRepository
     {
         protected static readonly DirectoryInfo MiniatureGit = new DirectoryInfo(MiniatureGitDirName);
         protected static readonly DirectoryInfo Files = new DirectoryInfo(Path.Join(MiniatureGit.FullName, "files"));

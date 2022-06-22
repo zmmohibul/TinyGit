@@ -5,7 +5,7 @@ using MiniatureGit.Utils;
 
 namespace MiniatureGit.Repositories
 {
-    public class StagingRepository : MainRepository
+    public class StagingRepository : CommonRepository
     {
         private static StagingArea SA;
 
@@ -72,6 +72,19 @@ namespace MiniatureGit.Repositories
 
             SA = await FileSystemUtils.ReadObjectAsync<StagingArea>(StagingAreaPath);
             SA.FilesStagedForAddition[filePath] = fileContentSha;
+
+            await FileSystemUtils.WriteObjectAsync<StagingArea>(SA, "StagingArea", $"./{MiniatureGitDirName}");
+        }
+
+        public static async Task StageFileForRemoval(string filePath)
+        {
+            if (!File.Exists(filePath))
+            {
+                throw new FileNotFoundException();
+            }
+
+            SA = await FileSystemUtils.ReadObjectAsync<StagingArea>(StagingAreaPath);
+            SA.FilesStagedForRemoval[filePath] = string.Empty;
 
             await FileSystemUtils.WriteObjectAsync<StagingArea>(SA, "StagingArea", $"./{MiniatureGitDirName}");
         }
