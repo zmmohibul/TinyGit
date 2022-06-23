@@ -19,7 +19,22 @@ namespace MiniatureGit.Repositories
 
         public static async Task MergeBranch(string givenBranchName)
         {
-            await CommonRepository.ExitIfThereAreUntrackedChanges();
+            if (File.Exists(UnmergedCommit))
+            {
+                var unmergedCommit = await FileSystemUtils.ReadObjectAsync<Commit>(UnmergedCommit);
+                var mergeConfilctFilesInUnmergedCommit = await FileSystemUtils.ReadObjectAsync<MergeConfilctData>(MergeConfilctData);
+
+                foreach (var file in mergeConfilctFilesInUnmergedCommit.FilesInConflict)
+                {
+                    var fileContentSha = await FileSystemUtils.GetShaOfFileContent(file);
+                    unmergedCommit.Files[file] = fileContentSha;
+                }
+
+                File.Delete(UnmergedCommit);
+                File.Delete(MergeConfilctData);
+            }
+
+            await ExitIfThereAreUntrackedChanges();
 
             var givenBranchPath = Path.Join(BranchesDirectoryPath, givenBranchName);
             if (!File.Exists(givenBranchPath))

@@ -7,10 +7,6 @@ namespace MiniatureGit.Repositories
     {
         public static async Task MakeCommit(string commitMessage)
         {
-            if (File.Exists(UnmergedCommit))
-            {
-                
-            }
             if (await HeadPointerRepository.IsHeadDetached())
             {
                 LogError.Log($"You are in a detached head state!", "Checkout to tip of a branch before making commits!");

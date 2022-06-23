@@ -22,6 +22,19 @@ namespace MiniatureGit
             {
                 LogError.Log("This is not an initialized git repository");
             }
+            else if (firstArguemnt.Equals("merge"))
+            {
+                if (args.Length < 2)
+                {
+                    LogError.Log("Please enter a branch name");
+                }
+                
+                await BranchingRepository.MergeBranch(args[1]);
+            }
+            else if (File.Exists("./.minigit/UnmergedCommit"))
+            {
+                LogError.Log("Please resolve merge conflict and merge again");
+            }
             else if (firstArguemnt.Equals("commit"))
             {
                 if (args.Length < 2)
@@ -30,10 +43,6 @@ namespace MiniatureGit
                 }
 
                 await CommitRepository.MakeCommit(args[1]);
-            }
-            else if (File.Exists("./.minigit/UnmergedCommit"))
-            {
-                LogError.Log("Please resolve merge conflict and make a commit");
             }
             else if (firstArguemnt.Equals("add"))
             {
@@ -86,15 +95,6 @@ namespace MiniatureGit
                 }
 
                 await BranchingRepository.CreateNewBranch(args[1]);
-            }
-            else if (firstArguemnt.Equals("merge"))
-            {
-                if (args.Length < 2)
-                {
-                    LogError.Log("Please enter a branch name");
-                }
-                
-                await BranchingRepository.MergeBranch(args[1]);
             }
             else
             {
