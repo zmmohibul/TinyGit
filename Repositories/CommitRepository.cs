@@ -210,46 +210,46 @@ namespace MiniatureGit.Repositories
             return commitToReturn;
         }
 
-        public static async Task ExitIfThereAreUntrackedChanges()
-        {
-            var filesStagedForAddition = await StagingRepository.GetFilesStagedForAddition();
-            var headCommit = await HeadPointerRepository.GetHeadCommit();
+        // public static async Task ExitIfThereAreUntrackedChanges()
+        // {
+        //     var filesStagedForAddition = await StagingRepository.GetFilesStagedForAddition();
+        //     var headCommit = await HeadPointerRepository.GetHeadCommit();
 
-            if (filesStagedForAddition.Count() > 0)
-            {
-                foreach (var file in filesStagedForAddition.Keys)
-                {
-                    System.Console.WriteLine($"The file {file} has been modified");
-                }
+        //     if (filesStagedForAddition.Count() > 0)
+        //     {
+        //         foreach (var file in filesStagedForAddition.Keys)
+        //         {
+        //             System.Console.WriteLine($"The file {file} has been modified");
+        //         }
 
-                LogError.Log("Please stage your modified files and make commit before you checkout other commits");
-            }
+        //         LogError.Log("Please stage your modified files and make commit before you checkout other commits");
+        //     }
 
-            var fileModifiedButNotTracked = false;
-            foreach (var (file, fileSha) in headCommit.Files)
-            {
-                if (File.Exists(file))
-                {
-                    var fileInDirSha = await FileSystemUtils.GetShaOfFileContent(file);
+        //     var fileModifiedButNotTracked = false;
+        //     foreach (var (file, fileSha) in headCommit.Files)
+        //     {
+        //         if (File.Exists(file))
+        //         {
+        //             var fileInDirSha = await FileSystemUtils.GetShaOfFileContent(file);
 
-                    if (filesStagedForAddition.ContainsKey(file))
-                    {
-                        if (filesStagedForAddition[file].Equals(fileInDirSha))
-                        {
-                            continue;
-                        }
-                    }
-                    if (!fileSha.Equals(fileInDirSha))
-                    {
-                        System.Console.WriteLine($"The file {file.Remove(0, 2)} has been modified since last commit.");
-                        fileModifiedButNotTracked = true;
-                    }
-                }
-            }
-            if (fileModifiedButNotTracked)
-            {
-                LogError.Log("Please stage them and make commit before you can checkout to other commits");
-            }
-        }
+        //             if (filesStagedForAddition.ContainsKey(file))
+        //             {
+        //                 if (filesStagedForAddition[file].Equals(fileInDirSha))
+        //                 {
+        //                     continue;
+        //                 }
+        //             }
+        //             if (!fileSha.Equals(fileInDirSha))
+        //             {
+        //                 System.Console.WriteLine($"The file {file.Remove(0, 2)} has been modified since last commit.");
+        //                 fileModifiedButNotTracked = true;
+        //             }
+        //         }
+        //     }
+        //     if (fileModifiedButNotTracked)
+        //     {
+        //         LogError.Log("Please stage them and make commit before you can checkout to other commits");
+        //     }
+        // }
     }
 }

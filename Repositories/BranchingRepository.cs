@@ -32,6 +32,21 @@ namespace MiniatureGit.Repositories
 
                 File.Delete(UnmergedCommit);
                 File.Delete(MergeConfilctData);
+                
+                unmergedCommit.CreatedAt = DateTime.Now;
+                System.Console.WriteLine(unmergedCommit.CommitMessage);
+                System.Console.WriteLine(unmergedCommit.CreatedAt);;
+                foreach (var (file, fileSha) in unmergedCommit.Files)
+                {
+                    System.Console.WriteLine($"{file} - {fileSha}");
+                }
+
+                var unmergedCommitSha = FileSystemUtils.GetSha1FromObject<Commit>(unmergedCommit);
+                await FileSystemUtils.WriteObjectAsync<Commit>(unmergedCommit, unmergedCommitSha, CommitsDirectoryPath);
+
+                await HeadPointerRepository.ChangeHeadAndCurrentBranch(unmergedCommitSha);
+
+                Environment.Exit(1);
             }
 
             await ExitIfThereAreUntrackedChanges();
